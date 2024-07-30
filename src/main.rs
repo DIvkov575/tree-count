@@ -5,7 +5,7 @@ use std::ffi::{OsStr, OsString};
 use std::fmt::{Debug, Display, Formatter};
 use std::fs::{File, read_dir};
 use std::hash::Hash;
-use std::io::Read;
+use std::io::{BufRead, BufReader, Read};
 use std::ops::Add;
 use std::path::{Path, PathBuf};
 use std::process::exit;
@@ -76,16 +76,17 @@ fn main() {
                 if mode == Mode::CharCount {
                     *v += file.metadata().unwrap().len();
                 } else if mode == Mode::FileCount{
-                    *v += 1
+                    *v += 1;
                 } else if mode == Mode::LineCount {
-                    read_lines()
-                    // *v += File::from(file).read_vectored()
+                    *v += BufReader::new(File::open(file).unwrap()).lines().count() as u64;
                 }
             } else {
                 if mode == Mode::CharCount{
                     table.map.insert(extension.to_owned().to_owned(), file.metadata().unwrap().len());
                 } else if mode == Mode::FileCount{
                     table.map.insert(extension.to_owned().to_owned(), 1);
+                } else if mode == Mode::LineCount {
+                    *v = BufReader::new(File::open(file).unwrap()).lines().count() as u64;
                 }
 
             }

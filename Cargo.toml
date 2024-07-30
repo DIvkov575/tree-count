@@ -1,8 +1,12 @@
 [package]
-name = "tree-counter"
+name = "tree-count"
 version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-nix = "0.29.0"
 prettytable = "0.10.0"
+
+[build.release]
+codegen-units = 1
+lto = "fat"
+
